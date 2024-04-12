@@ -110,7 +110,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: download artifact
-        uses: actions/download-artifact@main
+        uses: actions/download-artifact@v3
 
       - name: get commit's short hash
         id: get-hash
