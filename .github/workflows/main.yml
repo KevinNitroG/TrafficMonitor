@@ -116,6 +116,14 @@ jobs:
         id: get-hash
         run: echo "commit-hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
+      - name: change exe name
+        run: |
+          cd x64*_TrafficMonitor
+          mv TrafficMonitor.exe TrafficMonitor_x64.exe
+          cd ..
+          cd x86*_TrafficMonitor
+          mv TrafficMonitor.exe TrafficMonitor_x86.exe
+
       - name: release
         uses: svenstaro/upload-release-action@master
         with:
