@@ -5,92 +5,118 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
-      
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.1.3
-      
-    - name: Run msbuild
-      run: msbuild -p:configuration=release -p:platform=x64 -p:platformToolset=v142
-      
-    - name: Get current time
-      uses: josStorer/get-current-time@v2.0.2
-      id: current-time
-      with:
-        format: YYYYMMDD_HHmmss
-        utcOffset: "+08:00"
-      
-    - name : Upload artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: x64_${{ steps.current-time.outputs.formattedTime }}_TrafficMonitor
-        path: |
-          Bin/x64/Release/TrafficMonitor.exe
-          Bin/x64/Release/*.dll
+      - uses: actions/checkout@v3
 
-    - name : Upload pdb files
-      uses: actions/upload-artifact@v3
-      with:
-        name: x64_${{ steps.current-time.outputs.formattedTime }}_pdb
-        path: Bin/x64/Release/*.pdb
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1.3
+
+      - name: Run msbuild
+        run: msbuild -p:configuration=release -p:platform=x64 -p:platformToolset=v142
+
+      - name: Get current time
+        uses: josStorer/get-current-time@v2.0.2
+        id: current-time
+        with:
+          format: YYYYMMDD_HHmmss
+          utcOffset: "+08:00"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: x64_${{ steps.current-time.outputs.formattedTime }}_TrafficMonitor
+          path: |
+            Bin/x64/Release/TrafficMonitor.exe
+            Bin/x64/Release/*.dll
+
+      - name: Upload pdb files
+        uses: actions/upload-artifact@v3
+        with:
+          name: x64_${{ steps.current-time.outputs.formattedTime }}_pdb
+          path: Bin/x64/Release/*.pdb
 
   x86_build:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
-      
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.1.3
-      
-    - name: Run msbuild
-      run: msbuild -p:configuration=release -p:platform=x86 -p:platformToolset=v142
-      
-    - name: Get current time
-      uses: josStorer/get-current-time@v2.0.2
-      id: current-time
-      with:
-        format: YYYYMMDD_HHmmss
-        utcOffset: "+08:00"
-      
-    - name : Upload artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: x86_${{ steps.current-time.outputs.formattedTime }}_TrafficMonitor
-        path: |
-          Bin/Release/TrafficMonitor.exe
-          Bin/Release/*.dll
-      
-    - name : Upload pdb files
-      uses: actions/upload-artifact@v3
-      with:
-        name: x86_${{ steps.current-time.outputs.formattedTime }}_pdb
-        path: Bin/Release/*.pdb
+      - uses: actions/checkout@v3
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1.3
+
+      - name: Run msbuild
+        run: msbuild -p:configuration=release -p:platform=x86 -p:platformToolset=v142
+
+      - name: Get current time
+        uses: josStorer/get-current-time@v2.0.2
+        id: current-time
+        with:
+          format: YYYYMMDD_HHmmss
+          utcOffset: "+08:00"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: x86_${{ steps.current-time.outputs.formattedTime }}_TrafficMonitor
+          path: |
+            Bin/Release/TrafficMonitor.exe
+            Bin/Release/*.dll
+
+      - name: Upload pdb files
+        uses: actions/upload-artifact@v3
+        with:
+          name: x86_${{ steps.current-time.outputs.formattedTime }}_pdb
+          path: Bin/Release/*.pdb
 
   # winXP_build:
-    # runs-on: windows-latest
+  # runs-on: windows-latest
 
-    # steps:
-    # - uses: actions/checkout@v3
-      
-    # - name: Add msbuild to PATH
-      # uses: microsoft/setup-msbuild@v1.1.3
-      
-    # - name: Run msbuild
-      # run: |
-        # set ExternalCompilerOptions=/DCOMPILE_FOR_WINXP
-        # msbuild -p:configuration=release -p:platform=x86 -p:platformToolset=v140_xp
-      # shell: cmd
-      
-    # - name: Get current time
-      # uses: josStorer/get-current-time@v2.0.2
-      # id: current-time
-      # with:
-        # format: YYYYMMDD_HHmmss
-        # utcOffset: "+08:00"
-      
-    # - name : Upload artifact
-      # uses: actions/upload-artifact@v3
-      # with:
-        # name: winXP_${{ steps.current-time.outputs.formattedTime }}_TrafficMonitor
-        # path: Bin/Release/TrafficMonitor.exe
+  # steps:
+  # - uses: actions/checkout@v3
+
+  # - name: Add msbuild to PATH
+  # uses: microsoft/setup-msbuild@v1.1.3
+
+  # - name: Run msbuild
+  # run: |
+  # set ExternalCompilerOptions=/DCOMPILE_FOR_WINXP
+  # msbuild -p:configuration=release -p:platform=x86 -p:platformToolset=v140_xp
+  # shell: cmd
+
+  # - name: Get current time
+  # uses: josStorer/get-current-time@v2.0.2
+  # id: current-time
+  # with:
+  # format: YYYYMMDD_HHmmss
+  # utcOffset: "+08:00"
+
+  # - name : Upload artifact
+  # uses: actions/upload-artifact@v3
+  # with:
+  # name: winXP_${{ steps.current-time.outputs.formattedTime }}_TrafficMonitor
+  # path: Bin/Release/TrafficMonitor.exe
+
+  upload-release:
+    runs-on: ubuntu-latest
+    needs:
+      - x86_build
+      - x64_build
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: download artifact
+        uses: actions/download-artifact@main
+
+      - name: get commit's short hash
+        id: get-hash
+        run: echo "commit-hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: release
+        uses: svenstaro/upload-release-action@master
+        with:
+          file: "*_TrafficMonitor/*.exe"
+          release_name: ${{ steps.get-hash.outputs.commit-hash }}
+          tag: ${{ steps.get-hash.outputs.commit-hash }}
+          file_glob: true
+          overwrite: true
